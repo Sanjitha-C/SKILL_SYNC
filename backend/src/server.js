@@ -14,7 +14,9 @@ dotenv.config();
 await connectDB();
 
 const app = express();
-
+app.get("/", (req, res) => {
+  res.send("Skill Sync Backend Running");
+});
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
