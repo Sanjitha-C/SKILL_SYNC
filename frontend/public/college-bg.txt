@@ -1,0 +1,5 @@
+Place your college background image in this folder as:
+college-bg.jpg
+
+Example final path:
+frontend/public/college-bg.jpg
