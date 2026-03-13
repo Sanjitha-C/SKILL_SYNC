@@ -1,6 +1,36 @@
 import { useEffect, useState } from 'react';
 import api from '../../api/axios';
 
+const EventDropdown = ({ item }) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <div style={{ borderBottom: '1px solid var(--border, #e5e7eb)' }}>
+      <button
+        onClick={() => setOpen((o) => !o)}
+        style={{
+          width: '100%', display: 'flex', justifyContent: 'space-between',
+          alignItems: 'center', padding: '10px 0', background: 'none',
+          border: 'none', cursor: 'pointer', fontWeight: 600,
+          color: 'inherit', fontSize: '0.95rem'
+        }}
+      >
+        <span>{item.title}</span>
+        <span style={{ fontSize: '0.8rem', opacity: 0.6 }}>{open ? '▲' : '▼'}</span>
+      </button>
+      {open && (
+        <div style={{ padding: '6px 0 12px 12px', display: 'flex', gap: '24px' }}>
+          <span style={{ fontSize: '0.9rem' }}>
+            <strong>Registered:</strong> {item.registrations}
+          </span>
+          <span style={{ fontSize: '0.9rem' }}>
+            <strong>Present:</strong> {item.attendance}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const AdminReports = () => {
   const assetBaseUrl = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api').replace(/\/api\/?$/, '');
   const [report, setReport] = useState({ byEvent: [], totals: {}, eventSummaries: [] });
@@ -51,16 +81,16 @@ const AdminReports = () => {
           <p>Total Events: {report.totals.totalEvents || 0}</p>
           <p>Total Registrations: {report.totals.totalRegistrations || 0}</p>
           <p>Total Attendance: {report.totals.totalAttendance || 0}</p>
-          <div className="list">
-            {report.byEvent.map((item) => (
-              <div className="list-item" key={item.eventId}>
-                <strong>{item.title}</strong>
-                <span>
-                  Registered: {item.registrations} | Present: {item.attendance}
-                </span>
-              </div>
-            ))}
-          </div>
+          {report.byEvent.length > 0 && (
+            <div style={{ marginTop: '12px' }}>
+              <p style={{ fontWeight: 600, marginBottom: '6px', fontSize: '0.9rem', opacity: 0.7 }}>
+                Events Breakdown
+              </p>
+              {report.byEvent.map((item) => (
+                <EventDropdown key={item.eventId} item={item} />
+              ))}
+            </div>
+          )}
         </div>
         <div className="card">
           <h3>Publish Event Outcome Summary</h3>

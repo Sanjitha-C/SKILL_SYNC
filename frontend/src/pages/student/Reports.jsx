@@ -35,22 +35,32 @@ const Reports = () => {
             <div className="list-item" key={item.registrationId}>
               <strong>{item.event?.title}</strong>
               <span>{item.feedback ? `Rated ${item.feedback.rating}/5` : 'No feedback submitted'}</span>
+              {!item.feedback && (
               <div className="row-actions">
-                <input
-                  type="number"
-                  min="1"
-                  max="5"
-                  placeholder="Rating"
-                  onChange={(e) =>
-                    setFeedback((prev) => ({
-                      ...prev,
-                      [item.event?._id]: {
-                        ...(prev[item.event?._id] || { comment: '' }),
-                        rating: Number(e.target.value)
-                      }
-                    }))
-                  }
-                />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <input
+                    type="number"
+                    min="1"
+                    max="5"
+                    placeholder="1–5"
+                    value={feedback[item.event?._id]?.rating ?? ''}
+                    style={{ width: '60px' }}
+                    onChange={(e) => {
+                      const val = Math.min(5, Math.max(1, Number(e.target.value)));
+                      setFeedback((prev) => ({
+                        ...prev,
+                        [item.event?._id]: {
+                          ...(prev[item.event?._id] || { comment: '' }),
+                          rating: val
+                        }
+                      }));
+                    }}
+                    onKeyDown={(e) => {
+                      if (['e', 'E', '+', '-', '.'].includes(e.key)) e.preventDefault();
+                    }}
+                  />
+                  <span style={{ fontSize: '0.85rem', opacity: 0.7 }}>/ 5</span>
+                </div>
                 <input
                   placeholder="Comment"
                   onChange={(e) =>
@@ -67,6 +77,7 @@ const Reports = () => {
                   Submit
                 </button>
               </div>
+              )}
             </div>
           ))}
           {items.length === 0 ? <p>No event participation records yet.</p> : null}
