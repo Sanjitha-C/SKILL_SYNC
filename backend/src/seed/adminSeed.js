@@ -10,58 +10,44 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
-/**
- * ADD MORE ADMINS HERE
-  { name: 'Admin Name', email: 'admin@mail.com', password: 'SecurePassword123' }
- */
-const adminsToCreate = [
-  {
-    name: process.env.ADMIN_NAME || 'System Admin',
-    email: process.env.ADMIN_EMAIL || 'admin@opportunitymatcher.com',
-    password: process.env.ADMIN_PASSWORD || 'Admin@123'
-  }
-];
-
 const seedAdmins = async () => {
   try {
-    await connectDB();
+    const name = process.env.ADMIN_NAME || 'System Admin';
+    const email = process.env.ADMIN_EMAIL?.trim();
+    const password = process.env.ADMIN_PASSWORD;
 
-    let createdCount = 0;
-    let existingCount = 0;
-
-    for (const adminData of adminsToCreate) {
-      const existing = await User.findOne({ email: adminData.email });
-
-      if (existing) {
-        console.log('✓ Admin already exists:', adminData.email);
-        existingCount += 1;
-        continue;
-      }
-
-      const admin = await User.create({
-        name: adminData.name,
-        email: adminData.email,
-        password: adminData.password,
-        role: 'admin',
-        department: 'Administration',
-        year: 'N/A',
-        interests: ['AI', 'Coding', 'Sports', 'Arts', 'Robotics']
-      });
-
-      console.log('✓ Admin created successfully:', admin.email);
-      createdCount += 1;
+    if (!email || !password) {
+      throw new Error('Set ADMIN_EMAIL and ADMIN_PASSWORD in the environment before seeding an admin.');
     }
 
-    console.log(`\n📊 Summary: ${createdCount} new admin(s) created, ${existingCount} already existed.`);
-    process.exit(0);
+    await connectDB();
+
+    const existing = await User.findOne({ email });
+    if (existing) {
+      console.log('Admin already exists:', email);
+      return;
+    }
+    if (password.length < 12) {
+      throw new Error('ADMIN_PASSWORD must be at least 12 characters.');
+    }
+
+    const admin = await User.create({
+      name,
+      email,
+      password,
+      role: 'admin',
+      department: 'Administration',
+      year: 'N/A',
+      interests: ['AI', 'Coding', 'Sports', 'Arts', 'Robotics']
+    });
+
+    console.log('Admin created successfully:', admin.email);
   } catch (error) {
     console.error('Admin seed failed:', error.message);
-    process.exit(1);
+    process.exitCode = 1;
+  } finally {
+    await mongoose.disconnect();
   }
 };
 
 seedAdmins();
-
-process.on('exit', async () => {
-  await mongoose.disconnect();
-});

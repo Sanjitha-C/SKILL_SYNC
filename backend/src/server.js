@@ -11,12 +11,19 @@ import studentRoutes from './routes/studentRoutes.js';
 import { errorHandler, notFound } from './middleware/errorMiddleware.js';
 
 dotenv.config();
+const configuredClientOrigins = process.env.CLIENT_URL
+  ?.split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+if (process.env.NODE_ENV === 'production' && !configuredClientOrigins?.length) {
+  throw new Error('CLIENT_URL must contain the deployed frontend origin in production.');
+}
+
 await connectDB();
 
 const app = express();
-const clientOrigins = process.env.CLIENT_URL
-  ? process.env.CLIENT_URL.split(',').map((origin) => origin.trim()).filter(Boolean)
-  : '*';
+const clientOrigins = configuredClientOrigins?.length ? configuredClientOrigins : '*';
 
 app.get("/", (req, res) => {
   res.send("Skill Sync Backend Running");
