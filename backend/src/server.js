@@ -14,13 +14,17 @@ dotenv.config();
 await connectDB();
 
 const app = express();
+const clientOrigins = process.env.CLIENT_URL
+  ? process.env.CLIENT_URL.split(',').map((origin) => origin.trim()).filter(Boolean)
+  : '*';
+
 app.get("/", (req, res) => {
   res.send("Skill Sync Backend Running");
 });
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-app.use(cors({ origin: process.env.CLIENT_URL || '*'}));
+app.use(cors({ origin: clientOrigins }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));

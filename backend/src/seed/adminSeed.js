@@ -19,11 +19,7 @@ const adminsToCreate = [
     name: process.env.ADMIN_NAME || 'System Admin',
     email: process.env.ADMIN_EMAIL || 'admin@opportunitymatcher.com',
     password: process.env.ADMIN_PASSWORD || 'Admin@123'
-  },
-  { name: 'New Admin', email: 'newadmin@gmail.com', password: 'newadmin@123' }
-  // Add more admins below:
-  // { name: 'Second Admin', email: 'admin2@mail.com', password: 'SecurePass456' },
-  // { name: 'Third Admin', email: 'admin3@mail.com', password: 'SecurePass789' }
+  }
 ];
 
 const seedAdmins = async () => {

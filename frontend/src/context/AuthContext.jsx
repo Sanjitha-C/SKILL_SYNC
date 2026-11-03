@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const bootstrap = async () => {
-      if (!token) {
+      if (!token || user) {
         setLoading(false);
         return;
       }
@@ -28,12 +28,13 @@ export const AuthProvider = ({ children }) => {
     };
 
     bootstrap();
-  }, [token]);
+  }, [token, user]);
 
   const login = (payload) => {
     localStorage.setItem('om_token', payload.token);
     setToken(payload.token);
     setUser(payload.user);
+    setLoading(false);
   };
 
   const logout = () => {

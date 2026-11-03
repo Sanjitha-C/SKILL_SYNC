@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import api from '../api/axios';
+import api, { AUTH_REQUEST_TIMEOUT_MS, getApiErrorMessage } from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import TagInputWithSuggestions from '../components/TagInputWithSuggestions';
 import { DOMAIN_OPTIONS, INTEREST_OPTIONS } from '../constants/profileOptions';
@@ -32,12 +32,12 @@ const SignupInterestsPage = () => {
     setLoading(true);
     try {
       const payload = { ...credentials, interests, interestedDomains };
-      const { data } = await api.post('/auth/signup', payload);
+      const { data } = await api.post('/auth/signup', payload, { timeout: AUTH_REQUEST_TIMEOUT_MS });
       sessionStorage.removeItem('signup_credentials');
       login(data);
       navigate('/student/institution');
     } catch (err) {
-      setError(err.response?.data?.message || 'Signup failed.');
+      setError(getApiErrorMessage(err, 'Signup failed.'));
     } finally {
       setLoading(false);
     }

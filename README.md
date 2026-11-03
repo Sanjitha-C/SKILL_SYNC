@@ -88,3 +88,16 @@ Open: `http://localhost:5173`
 - Password: `Admin@123`
 
 These are seeded via `npm run seed:admin` (can be changed in backend `.env`).
+
+## 6) Optional Local Demo Data
+
+After creating an admin and student account, run this from the repository root:
+
+```bash
+npm --prefix backend run seed:demo
+```
+
+This idempotently adds sample events and linked registrations, attendance, feedback,
+an event summary, and a student message for the most recently created student account.
+It does not delete or update existing accounts or records. Demo event titles begin
+with `[Skill Sync Demo]` so they are easy to identify.

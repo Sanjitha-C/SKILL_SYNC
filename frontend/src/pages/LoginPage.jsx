@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import api from '../api/axios';
+import api, { AUTH_REQUEST_TIMEOUT_MS, getApiErrorMessage } from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 
 const LoginPage = () => {
@@ -15,12 +15,12 @@ const LoginPage = () => {
     setError('');
     setLoading(true);
     try {
-      const { data } = await api.post('/auth/login', form);
+      const { data } = await api.post('/auth/login', form, { timeout: AUTH_REQUEST_TIMEOUT_MS });
       login(data);
       if (data.user.role === 'admin') navigate('/admin/manage-events');
       else navigate('/student/institution');
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed.');
+      setError(getApiErrorMessage(err, 'Login failed.'));
     } finally {
       setLoading(false);
     }
